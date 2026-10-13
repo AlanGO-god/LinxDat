@@ -1,0 +1,5 @@
+# Fuerza saltos de línea LF en todos los sistemas (evita errores en Docker con Windows)
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.webp binary
