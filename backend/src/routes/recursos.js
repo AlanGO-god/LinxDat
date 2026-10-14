@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import { pool } from '../db.js';
 import { ESTADOS, ESTADOS_EDITABLES, TIPOS } from '../constants.js';
-import { requireAdmin } from '../middleware/auth.js';
+import { requireAuth, requireAdmin } from '../middleware/auth.js';
 
 const router = Router();
-router.use(requireAdmin);
+router.use(requireAuth); // consultar: cualquier usuario con sesión (US02). Modificar: solo administrador
 
 // R-001, R-002, ... (LPAD no trunca ids de más de 3 dígitos gracias al GREATEST)
 const CODIGO_SQL = `'R-' || LPAD(id::text, GREATEST(3, LENGTH(id::text)), '0')`;
@@ -103,6 +103,7 @@ router.get(
 // POST /api/recursos  -> agrega un recurso al catálogo
 router.post(
   '/',
+  requireAdmin,
   wrap(async (req, res) => {
     const { datos, errores } = validarRecurso(req.body);
     if (hayErrores(errores)) {
@@ -128,6 +129,7 @@ router.post(
 // PUT /api/recursos/:id  -> edita un recurso existente
 router.put(
   '/:id',
+  requireAdmin,
   validarId,
   wrap(async (req, res) => {
     const actual = await pool.query('SELECT estado FROM recursos WHERE id = $1', [req.recursoId]);
@@ -169,8 +171,9 @@ router.put(
 );
 
 // DELETE /api/recursos/:id  -> BAJA LÓGICA (no borra la fila, conserva el historial de préstamos)
-router.delete(
+router.put(
   '/:id',
+  requireAdmin,
   validarId,
   wrap(async (req, res) => {
     const { rows } = await pool.query(

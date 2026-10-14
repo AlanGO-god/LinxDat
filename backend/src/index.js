@@ -2,7 +2,9 @@ import express from 'express';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { pool } from './db.js';
+import authRouter from './routes/auth.js';
 import recursosRouter from './routes/recursos.js';
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -20,6 +22,7 @@ app.get('/api/health', async (_req, res) => {
   }
 });
 
+app.use('/api/auth', authRouter); // US01 (login)
 app.use('/api/recursos', recursosRouter); // US03 (y base de US02)
 
 // Cualquier ruta /api desconocida responde JSON (no el HTML del frontend)

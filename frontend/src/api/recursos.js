@@ -1,17 +1,4 @@
-async function request(url, options = {}) {
-  const res = await fetch(url, {
-    headers: { 'Content-Type': 'application/json' },
-    ...options,
-  });
-  const data = await res.json().catch(() => null);
-  if (!res.ok) {
-    const err = new Error(data?.error || 'No se pudo completar la solicitud');
-    err.detalles = data?.detalles || {};
-    err.status = res.status;
-    throw err;
-  }
-  return data;
-}
+import { request } from './http.js';
 
 export function listarRecursos({ estado = '', q = '' } = {}) {
   const params = new URLSearchParams();

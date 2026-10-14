@@ -97,3 +97,33 @@ body {
 .campo__error { color: var(--rojo); }
 .fila { display: flex; gap: 12px; }
 @media (max-width: 520px) { .fila { flex-direction: column; gap: 0; } }
+
+
+/* ---------- Login / sesión (US01) ---------- */
+.cargando { padding: 24px; color: #6b7a72; }
+.topbar--sesion { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.topbar__usuario { display: flex; align-items: center; gap: 12px; font-size: 0.9rem; }
+.btn--chico { padding: 5px 12px; font-size: 0.85rem; }
+.sidebar a.sidebar__item { text-decoration: none; }
+.login { min-height: 100vh; display: flex; flex-direction: column; }
+.login__centro { flex: 1; display: grid; place-items: center; padding: 24px; }
+.login__tarjeta {
+  width: 100%; max-width: 380px; background: #fff; border: 1px solid var(--borde);
+  border-radius: 12px; padding: 28px; display: flex; flex-direction: column; gap: 14px;
+}
+.login__tarjeta h2 { margin: 0; font-size: 1.4rem; }
+.login__sub { margin: 0 0 4px; color: #6b7a72; font-size: 0.9rem; }
+.login__tarjeta .campo { display: flex; flex-direction: column; gap: 6px; font-size: 0.9rem; font-weight: 600; }
+.login__tarjeta .campo input { padding: 9px 10px; font-weight: 400; }
+.login__error {
+  margin: 0; padding: 9px 12px; border-radius: 8px; font-size: 0.9rem;
+  background: #fdecec; color: var(--rojo); border: 1px solid #f3c4c4;
+}
+.login__btn { justify-content: center; }
+.aviso-pagina {
+  max-width: 480px; background: #fff; border: 1px solid var(--borde);
+  border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 10px; align-items: flex-start;
+}
+.aviso-pagina h2 { margin: 0; color: var(--rojo); }
+.aviso-pagina p { margin: 0; }
+.aviso-pagina a.btn { text-decoration: none; }

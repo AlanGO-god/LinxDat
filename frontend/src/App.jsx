@@ -1,10 +1,38 @@
-import Layout from './components/Layout.jsx';
+import { Navigate, Route, Routes } from 'react-router-dom';
+import { RUTA_POR_ROL, useAuth } from './context/AuthContext.jsx';
+import RutaProtegida from './components/RutaProtegida.jsx';
+import Login from '../pages/Login.jsx';
 import GestionRecursos from './pages/GestionRecursos.jsx';
+import CatalogoEstudiante from './pages/CatalogoEstudiante.jsx';
+
+// "/" manda a cada usuario a la vista de su rol (o al login si no hay sesión)
+function Inicio() {
+  const { usuario, cargando } = useAuth();
+  if (cargando) return <p className="cargando">Cargando…</p>;
+  return <Navigate to={usuario ? RUTA_POR_ROL[usuario.rol] ?? '/login' : '/login'} replace />;
+}
 
 export default function App() {
   return (
-    <Layout>
-      <GestionRecursos />
-    </Layout>
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route
+        path="/admin/recursos"
+        element={
+          <RutaProtegida roles={['administrador']}>
+            <GestionRecursos />
+          </RutaProtegida>
+        }
+      />
+      <Route
+        path="/catalogo"
+        element={
+          <RutaProtegida roles={['estudiante', 'administrador']}>
+            <CatalogoEstudiante />
+          </RutaProtegida>
+        }
+      />
+      <Route path="*" element={<Inicio />} />
+    </Routes>
   );
 }
