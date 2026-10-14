@@ -1,7 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { RUTA_POR_ROL, useAuth } from './context/AuthContext.jsx';
 import RutaProtegida from './components/RutaProtegida.jsx';
-import Login from '../pages/Login.jsx';
+import Login from './pages/login.jsx';
 import GestionRecursos from './pages/GestionRecursos.jsx';
 import CatalogoEstudiante from './pages/CatalogoEstudiante.jsx';
 
