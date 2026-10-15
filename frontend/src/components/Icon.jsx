@@ -53,6 +53,12 @@ const PATHS = {
       <line x1="12" y1="8" x2="12.01" y2="8" />
     </>
   ),
+  pin: (
+    <>
+      <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z" />
+      <circle cx="12" cy="10" r="3" />
+    </>
+  ),
 };
 
 export default function Icon({ name, size = 18 }) {
