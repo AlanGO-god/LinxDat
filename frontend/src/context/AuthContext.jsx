@@ -30,8 +30,11 @@ export function AuthProvider({ children }) {
     return () => window.removeEventListener('auth:expirada', alExpirar);
   }, []);
 
-  const login = useCallback(async (correo, password) => {
+  const login = useCallback(async (correo, password, rolEsperado) => {
     const { token, usuario: u } = await iniciarSesion(correo, password);
+    if (rolEsperado && u.rol !== rolEsperado) {
+      throw new Error('La cuenta no corresponde al rol seleccionado');
+    }
     guardarToken(token);
     setUsuario(u);
     return u;

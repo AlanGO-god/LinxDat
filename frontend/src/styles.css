@@ -105,21 +105,94 @@ body {
 .topbar__usuario { display: flex; align-items: center; gap: 12px; font-size: 0.9rem; }
 .btn--chico { padding: 5px 12px; font-size: 0.85rem; }
 .sidebar a.sidebar__item { text-decoration: none; }
-.login { min-height: 100vh; display: flex; flex-direction: column; }
-.login__centro { flex: 1; display: grid; place-items: center; padding: 24px; }
-.login__tarjeta {
-  width: 100%; max-width: 380px; background: #fff; border: 1px solid var(--borde);
-  border-radius: 12px; padding: 28px; display: flex; flex-direction: column; gap: 14px;
+
+/* ---------- Pantalla de login (US01, según mockup) ---------- */
+.lg { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; background: #fff; }
+
+/* Panel izquierdo */
+.lg__izq {
+  background: #0b4a2a; color: #fff; padding: 56px 64px;
+  display: flex; flex-direction: column; gap: 28px;
 }
-.login__tarjeta h2 { margin: 0; font-size: 1.4rem; }
-.login__sub { margin: 0 0 4px; color: #6b7a72; font-size: 0.9rem; }
-.login__tarjeta .campo { display: flex; flex-direction: column; gap: 6px; font-size: 0.9rem; font-weight: 600; }
-.login__tarjeta .campo input { padding: 9px 10px; font-weight: 400; }
-.login__error {
-  margin: 0; padding: 9px 12px; border-radius: 8px; font-size: 0.9rem;
-  background: #fdecec; color: var(--rojo); border: 1px solid #f3c4c4;
+.lg__logos { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.lg__logo { height: 56px; width: auto; }
+.lg__marca { font-size: 2rem; font-weight: 700; }
+.lg__sistema { margin: 12px 0 0; font-size: 1.1rem; line-height: 1.5; letter-spacing: 0.02em; }
+.lg__lema { margin: 0; font-size: 1.6rem; line-height: 1.3; }
+.lg__ilustracion { width: 100%; max-height: 340px; object-fit: cover; border-radius: 12px; }
+.lg__placeholder { width: 100%; min-height: 240px; border-radius: 12px; background: rgba(255, 255, 255, 0.08); }
+
+/* Panel derecho */
+.lg__der { display: grid; place-items: center; padding: 32px; }
+.lg__form { width: 100%; max-width: 460px; display: flex; flex-direction: column; gap: 18px; }
+.lg__titulo {
+  margin: 0 0 6px; text-align: center; font-size: 2.4rem; font-weight: 800;
+  color: #0b4a2a; text-transform: uppercase;
 }
-.login__btn { justify-content: center; }
+.lg__sr {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+/* Selector de rol */
+.lg__roles { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; border: 0; padding: 0; margin: 0 0 4px; position: relative; }
+.lg__rol {
+  position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px;
+  padding: 18px 10px 14px; border: 1.5px solid #c9d1cc; border-radius: 14px;
+  background: #fff; cursor: pointer; color: #0b4a2a; font-size: 1.05rem;
+}
+.lg__rol input { position: absolute; left: 14px; top: 50%; margin: 0; width: 18px; height: 18px; accent-color: #0b4a2a; }
+.lg__rol span { color: #1f2a24; }
+.lg__rol.is-sel { border: 2px solid #0b4a2a; background: #eef5f0; box-shadow: 0 2px 8px rgba(11, 74, 42, 0.25); }
+.lg__rol .lg__check {
+  position: absolute; top: -9px; right: -9px; width: 26px; height: 26px; border-radius: 50%;
+  background: #0b4a2a; color: #fff; display: grid; place-items: center;
+}
+
+/* Campos */
+.lg__campo {
+  display: flex; align-items: center; gap: 12px; padding: 0 16px;
+  border: 2px solid #0b4a2a; border-radius: 10px; background: #fff; color: #0b4a2a;
+}
+.lg__campo:focus-within { box-shadow: 0 0 0 3px rgba(11, 74, 42, 0.2); }
+.lg__campo input {
+  flex: 1; min-width: 0; border: 0; outline: 0; background: transparent;
+  padding: 16px 0; font: inherit; font-size: 1.05rem; color: #1f2a24;
+}
+.lg__campo input::placeholder { color: #8a948f; }
+
+/* Enlaces y botones */
+.lg__link {
+  align-self: flex-end; background: none; border: 0; padding: 0; cursor: pointer;
+  font: inherit; color: #0b4a2a; text-decoration: underline;
+}
+.lg__link--inline { align-self: auto; }
+.lg__btn {
+  margin-top: 6px; padding: 16px; border: 0; border-radius: 10px; cursor: pointer;
+  background: #0b4a2a; color: #fff; font: inherit; font-size: 1.1rem; font-weight: 700;
+  letter-spacing: 0.02em; text-transform: uppercase;
+}
+.lg__btn:hover:not(:disabled) { background: #083a21; }
+.lg__btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.lg__pie { margin: 0; text-align: center; font-size: 0.95rem; }
+.lg__regresar {
+  align-self: center; padding: 9px 30px; border: 1px solid #c9d1cc; border-radius: 10px;
+  background: #fff; color: #0b4a2a; font: inherit; font-weight: 600; cursor: pointer;
+}
+
+/* Mensajes */
+.lg__error, .lg__aviso { margin: 0; padding: 10px 14px; border-radius: 8px; font-size: 0.92rem; }
+.lg__error { background: #fdecec; color: var(--rojo); border: 1px solid #f3c4c4; }
+.lg__aviso { background: #eef5f0; color: #0b4a2a; border: 1px solid #cfe3d6; }
+
+/* Pantallas angostas: el panel verde pasa arriba y se simplifica */
+@media (max-width: 860px) {
+  .lg { grid-template-columns: 1fr; }
+  .lg__izq { padding: 28px 24px; gap: 16px; }
+  .lg__ilustracion, .lg__placeholder { display: none; }
+  .lg__lema { font-size: 1.2rem; }
+  .lg__titulo { font-size: 1.9rem; }
+}
 .aviso-pagina {
   max-width: 480px; background: #fff; border: 1px solid var(--borde);
   border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 10px; align-items: flex-start;
