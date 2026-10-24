@@ -253,8 +253,85 @@ body {
   border: 1px dashed var(--borde); border-radius: 10px;
 }
 
-.cat-modal .cat-badge { margin-bottom: 8px; }
-.cat-detalle { display: grid; grid-template-columns: 150px 1fr; gap: 8px 12px; margin: 14px 0 0; }
-.cat-detalle dt { font-weight: 700; }
-.cat-detalle dd { margin: 0; }
-@media (max-width: 520px) { .cat-detalle { grid-template-columns: 1fr; } }
+/* ---------- Detalle y solicitud de préstamo (US04, según mockup) ---------- */
+.det { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+.det-volver { align-self: flex-start; text-decoration: none; }
+.det-migas { display: flex; gap: 8px; font-size: 0.88rem; color: #6b7a72; }
+.det-migas a { color: var(--verde); }
+.det-muted { margin: 0; color: #6b7a72; font-size: 0.9rem; }
+
+.det-card {
+  background: #fff; border: 1px solid var(--borde); border-radius: 10px; padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06); min-width: 0;
+}
+.det-card__titulo {
+  margin: -16px -16px 14px; padding: 10px 16px; font-size: 1rem;
+  background: var(--verde-claro); border-bottom: 1px solid var(--borde); border-radius: 10px 10px 0 0;
+}
+
+.det-cabecera { display: flex; gap: 20px; align-items: flex-start; }
+.det-cabecera__icono {
+  flex: none; width: 120px; height: 120px; border-radius: 10px; display: grid; place-items: center;
+  background: var(--verde-claro); color: var(--verde);
+}
+.det-cabecera__info { flex: 1; min-width: 0; }
+.det-cabecera h2 { margin: 2px 0 8px; font-size: 1.5rem; }
+.det-codigo { margin: 0; font-weight: 800; color: var(--verde-osc); letter-spacing: 0.03em; }
+.det-estado { margin: 0 0 10px; display: flex; align-items: center; gap: 8px; }
+.det-datos { display: grid; grid-template-columns: 110px 1fr; gap: 4px 12px; margin: 0; font-size: 0.92rem; }
+.det-datos dt { font-weight: 700; }
+.det-datos dd { margin: 0; }
+.det-datos__ubic { display: flex; align-items: center; gap: 4px; }
+
+.det-grid { display: grid; grid-template-columns: 1fr 1.25fr 1fr; gap: 16px; align-items: start; }
+@media (max-width: 1000px) { .det-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 680px) {
+  .det-grid { grid-template-columns: 1fr; }
+  .det-cabecera { flex-direction: column; }
+  .det-datos { grid-template-columns: 1fr; }
+}
+
+/* Restricciones: visibles, con borde de aviso */
+.det-restricciones { border-left: 4px solid #e0a800; background: #fff8e1; border-radius: 6px; padding: 10px 12px; }
+.det-restricciones__aviso { margin: 0 0 6px; display: flex; gap: 6px; align-items: flex-start; font-weight: 700; color: #7a5a00; font-size: 0.9rem; }
+.det-restricciones__aviso svg { flex: none; margin-top: 1px; }
+.det-restricciones ul { margin: 0; padding-left: 20px; font-size: 0.9rem; }
+.det-restricciones li + li { margin-top: 4px; }
+
+/* Calendario */
+.det-cal__nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.det-cal__flecha {
+  width: 30px; height: 30px; border: 1px solid var(--borde); border-radius: 6px;
+  background: #fff; font-size: 1.1rem; cursor: pointer;
+}
+.det-cal__flecha:disabled { opacity: 0.4; cursor: not-allowed; }
+.det-cal__grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.det-cal__cab { text-align: center; font-size: 0.75rem; font-weight: 700; color: #6b7a72; padding: 2px 0; }
+.det-cal__dia {
+  aspect-ratio: 1; min-height: 32px; border: 1px solid var(--borde); border-radius: 6px;
+  background: #fff; font: inherit; font-size: 0.88rem; cursor: pointer;
+}
+.det-cal__dia:hover:not(:disabled) { border-color: var(--verde); }
+.det-cal__dia:disabled { background: #f3f5f4; color: #b3bdb7; cursor: not-allowed; }
+.det-cal__dia.is-hoy { font-weight: 800; }
+.det-cal__dia.is-parcial { background: #fff1c7; }
+.det-cal__dia.is-lleno:disabled { background: #c9d0cc; color: #5b6660; }
+.det-cal__dia.is-sel { background: var(--verde); border-color: var(--verde); color: #fff; }
+.det-cal__leyenda { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 10px; font-size: 0.78rem; color: #6b7a72; }
+.det-cal__leyenda span { display: inline-flex; align-items: center; gap: 5px; }
+.det-cal__muestra { width: 12px; height: 12px; border-radius: 3px; border: 1px solid var(--borde); background: #fff; }
+.det-cal__muestra.is-parcial { background: #fff1c7; }
+.det-cal__muestra.is-lleno { background: #c9d0cc; }
+
+.det-ocupados { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--borde); }
+.det-ocupados__dia { margin: 0 0 6px; font-weight: 700; }
+.det-ocupados ul { margin: 0; padding: 0; list-style: none; font-size: 0.9rem; }
+.det-ocupados li { display: flex; align-items: center; gap: 6px; padding: 3px 0; }
+
+/* Formulario de solicitud */
+.det-form .campo input[readonly] { background: #f7f9f8; }
+.det-form .fila { gap: 10px; }
+.det-form .alerta { margin: 0 0 10px; }
+.det-form__nota { margin-bottom: 10px; font-size: 0.82rem; }
+.det-form__btn { width: 100%; justify-content: center; }
+.det-confirmacion { display: flex; flex-direction: column; gap: 4px; }

@@ -4,6 +4,7 @@ import RutaProtegida from './components/RutaProtegida.jsx';
 import Login from './pages/Login.jsx';
 import GestionRecursos from './pages/GestionRecursos.jsx';
 import CatalogoEstudiante from './pages/CatalogoEstudiante.jsx';
+import DetalleRecurso from './pages/DetalleRecurso.jsx';
 
 // "/" manda a cada usuario a la vista de su rol (o al login si no hay sesión)
 function Inicio() {
@@ -29,6 +30,14 @@ export default function App() {
         element={
           <RutaProtegida roles={['estudiante', 'administrador']}>
             <CatalogoEstudiante />
+          </RutaProtegida>
+        }
+      />
+      <Route
+        path="/catalogo/:id"
+        element={
+          <RutaProtegida roles={['estudiante', 'administrador']}>
+            <DetalleRecurso />
           </RutaProtegida>
         }
       />

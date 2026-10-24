@@ -1,18 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Icon from '../components/Icon.jsx';
+import Badge, { ESTADOS_CATALOGO } from '../components/CatalogoBadge.jsx';
 import { listarRecursos } from '../api/recursos.js';
 import { TIPOS } from '../constants.js';
-
-// Etiquetas del catálogo (las del diseño). "baja" no se muestra al estudiante.
-const ESTADOS_CATALOGO = {
-  disponible: 'Disponible',
-  prestado: 'En Préstamo',
-  en_mantenimiento: 'Mantenimiento',
-};
-
-function Badge({ estado }) {
-  return <span className={`cat-badge cat-badge--${estado}`}>{ESTADOS_CATALOGO[estado]}</span>;
-}
 
 function TarjetaRecurso({ recurso, onDetalles }) {
   return (
@@ -31,46 +22,6 @@ function TarjetaRecurso({ recurso, onDetalles }) {
   );
 }
 
-function DetalleModal({ recurso, onCerrar }) {
-  const [aviso, setAviso] = useState('');
-  const disponible = recurso.estado === 'disponible';
-
-  return (
-    <div className="overlay" onClick={onCerrar}>
-      <div
-        className="modal cat-modal"
-        role="dialog"
-        aria-modal="true"
-        aria-label={`Detalles de ${recurso.nombre}`}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <h2>{recurso.nombre}</h2>
-        <Badge estado={recurso.estado} />
-        <dl className="cat-detalle">
-          <dt>ID</dt><dd>{recurso.codigo}</dd>
-          <dt>Tipo</dt><dd>{recurso.tipo}</dd>
-          <dt>Ubicación</dt><dd>{recurso.ubicacion}</dd>
-          <dt>Descripción</dt><dd>{recurso.descripcion || 'Sin descripción'}</dd>
-          <dt>Condiciones de uso</dt><dd>{recurso.condiciones_uso || 'Sin condiciones registradas'}</dd>
-        </dl>
-        {aviso && <p className="lg__aviso">{aviso}</p>}
-        <div className="modal__acciones">
-          <button className="btn btn--secundario" onClick={onCerrar}>Cerrar</button>
-          <button
-            className="btn btn--primario"
-            disabled={!disponible}
-            title={disponible ? '' : 'Este recurso no está disponible para solicitud'}
-            // TODO: conectar con el flujo de solicitud de préstamo (historia de usuario posterior)
-            onClick={() => setAviso('La solicitud de préstamo se habilitará en una próxima historia de usuario.')}
-          >
-            Solicitar préstamo
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function CatalogoEstudiante() {
   const [recursos, setRecursos] = useState([]);
   const [ubicaciones, setUbicaciones] = useState([]);
@@ -81,7 +32,7 @@ export default function CatalogoEstudiante() {
   const [ubicacion, setUbicacion] = useState('');
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState('');
-  const [detalle, setDetalle] = useState(null);
+  const navigate = useNavigate();
 
   // Debounce del buscador (300 ms)
   useEffect(() => {
@@ -179,11 +130,9 @@ export default function CatalogoEstudiante() {
 
       <div className="cat-grid">
         {visibles.map((r) => (
-          <TarjetaRecurso key={r.id} recurso={r} onDetalles={setDetalle} />
+          <TarjetaRecurso key={r.id} recurso={r} onDetalles={(recurso) => navigate(`/catalogo/${recurso.id}`)} />
         ))}
       </div>
-
-      {detalle && <DetalleModal recurso={detalle} onCerrar={() => setDetalle(null)} />}
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { pool } from './db.js';
 import authRouter from './routes/auth.js';
 import recursosRouter from './routes/recursos.js';
+import solicitudesRouter from './routes/solicitudes.js';
 
 
 const app = express();
@@ -24,6 +25,7 @@ app.get('/api/health', async (_req, res) => {
 
 app.use('/api/auth', authRouter); // US01 (login)
 app.use('/api/recursos', recursosRouter); // US03 (y base de US02)
+app.use('/api/solicitudes', solicitudesRouter); // US04 (solicitud de préstamo)
 
 // Cualquier ruta /api desconocida responde JSON (no el HTML del frontend)
 app.use('/api', (_req, res) => res.status(404).json({ error: 'Ruta no encontrada' }));
