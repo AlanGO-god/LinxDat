@@ -11,3 +11,8 @@ export const TIPOS = ['Multimedia', 'Laboratorio', 'Espacio'];
 // Solicitudes de préstamo (US04). Las pendientes y aprobadas apartan el horario.
 export const ESTADOS_SOLICITUD_OCUPAN = ['pendiente', 'aprobada'];
 export const DURACION_MAX_HORAS = 8;
+
+// Revisión de solicitudes por el administrador (US05)
+export const ESTADOS_SOLICITUD = ['pendiente', 'aprobada', 'rechazada', 'cancelada', 'devuelta'];
+export const DECISIONES = ['aprobada', 'rechazada'];
+export const COMENTARIO_MAX = 500;

@@ -1,8 +1,14 @@
-// US04 - Solicitud de préstamo de un recurso.
+// US04 - Solicitud de préstamo de un recurso. US05 - Revisión por el administrador.
 import { Router } from 'express';
 import { pool } from '../db.js';
-import { DURACION_MAX_HORAS, ESTADOS_SOLICITUD_OCUPAN } from '../constants.js';
-import { ROL_ESTUDIANTE, requireAuth, requireRole } from '../middleware/auth.js';
+import {
+  COMENTARIO_MAX,
+  DECISIONES,
+  DURACION_MAX_HORAS,
+  ESTADOS_SOLICITUD,
+  ESTADOS_SOLICITUD_OCUPAN,
+} from '../constants.js';
+import { ROL_ESTUDIANTE, requireAdmin, requireAuth, requireRole } from '../middleware/auth.js';
 
 const router = Router();
 router.use(requireAuth);
@@ -37,6 +43,109 @@ export function validarSolicitud(body = {}, ahora = new Date()) {
 
   return { datos: { recursoId, inicio, fin }, errores };
 }
+
+// Valida la decisión del administrador. El comentario es opcional al aprobar
+// y obligatorio al rechazar (el estudiante necesita saber el motivo).
+export function validarDecision(body = {}) {
+  const errores = {};
+  const decision = String(body.decision ?? '');
+  const comentario = String(body.comentario ?? '').trim();
+
+  if (!DECISIONES.includes(decision)) errores.decision = 'Elige aprobar o rechazar';
+  if (decision === 'rechazada' && !comentario) {
+    errores.comentario = 'Escribe el motivo del rechazo';
+  } else if (comentario.length > COMENTARIO_MAX) {
+    errores.comentario = `Máximo ${COMENTARIO_MAX} caracteres`;
+  }
+
+  return { datos: { decision, comentario: comentario || null }, errores };
+}
+
+// GET /api/solicitudes?estado=pendiente  -> bandeja del administrador, de la más antigua a la más reciente
+router.get(
+  '/',
+  requireAdmin,
+  wrap(async (req, res) => {
+    const estado = String(req.query.estado || 'pendiente');
+    if (!ESTADOS_SOLICITUD.includes(estado)) {
+      return res.status(400).json({ error: 'Estado inválido' });
+    }
+
+    const { rows } = await pool.query(
+      `SELECT s.id, s.fecha_inicio, s.fecha_limite, s.estado, s.comentario_admin, s.creado_en,
+              u.id AS usuario_id, u.nombre AS usuario_nombre, u.correo AS usuario_correo,
+              r.id AS recurso_id, r.nombre AS recurso_nombre, r.estado AS recurso_estado,
+              'R-' || LPAD(r.id::text, GREATEST(3, LENGTH(r.id::text)), '0') AS recurso_codigo
+         FROM solicitudes s
+         JOIN usuarios u ON u.id = s.usuario_id
+         JOIN recursos r ON r.id = s.recurso_id
+        WHERE s.estado = $1
+        ORDER BY s.creado_en, s.id`,
+      [estado]
+    );
+    res.json(rows);
+  })
+);
+
+// PATCH /api/solicitudes/:id  { decision: 'aprobada' | 'rechazada', comentario }
+router.patch(
+  '/:id',
+  requireAdmin,
+  wrap(async (req, res) => {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id < 1) {
+      return res.status(400).json({ error: 'Identificador inválido' });
+    }
+    const { datos, errores } = validarDecision(req.body);
+    if (Object.keys(errores).length) {
+      return res.status(400).json({ error: 'Datos inválidos', detalles: errores });
+    }
+
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+
+      // FOR UPDATE: si dos administradores deciden a la vez, el segundo ve la decisión del primero
+      const actual = await client.query(
+        `SELECT s.estado, r.estado AS recurso_estado
+           FROM solicitudes s JOIN recursos r ON r.id = s.recurso_id
+          WHERE s.id = $1
+          FOR UPDATE OF s`,
+        [id]
+      );
+      if (!actual.rows.length) {
+        await client.query('ROLLBACK');
+        return res.status(404).json({ error: 'Solicitud no encontrada' });
+      }
+      const { estado, recurso_estado: recursoEstado } = actual.rows[0];
+      if (estado !== 'pendiente') {
+        await client.query('ROLLBACK');
+        return res.status(409).json({ error: `Esta solicitud ya fue ${estado}` });
+      }
+      // El recurso pudo pasar a mantenimiento o baja después de que se pidió
+      if (datos.decision === 'aprobada' && ['en_mantenimiento', 'baja'].includes(recursoEstado)) {
+        await client.query('ROLLBACK');
+        return res.status(409).json({
+          error: 'El recurso ya no está disponible (mantenimiento o baja). Rechaza la solicitud indicando el motivo',
+        });
+      }
+
+      const { rows } = await client.query(
+        `UPDATE solicitudes SET estado = $1, comentario_admin = $2
+          WHERE id = $3
+          RETURNING id, estado, comentario_admin`,
+        [datos.decision, datos.comentario, id]
+      );
+      await client.query('COMMIT');
+      res.json(rows[0]);
+    } catch (err) {
+      await client.query('ROLLBACK').catch(() => {});
+      throw err;
+    } finally {
+      client.release();
+    }
+  })
+);
 
 // GET /api/solicitudes/ocupacion?recurso_id=1&desde=ISO&hasta=ISO
 // Horarios ya apartados de un recurso (sin datos de quién los pidió), para el calendario.

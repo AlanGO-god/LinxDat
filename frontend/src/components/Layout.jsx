@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 // Los demás módulos se activarán conforme se implementen sus historias de usuario.
 const MENU = [
   { icono: 'box', titulo: 'Recursos', ruta: '/admin/recursos', roles: ['administrador'] },
+  { icono: 'inbox', titulo: 'Solicitudes', ruta: '/admin/solicitudes', roles: ['administrador'] },
   { icono: 'box', titulo: 'Catálogo', ruta: '/catalogo', roles: ['estudiante'] },
   { icono: 'users', titulo: 'Usuarios (próximamente)', roles: ['administrador'] },
   { icono: 'clock', titulo: 'Historial (próximamente)', roles: ['administrador', 'estudiante'] },
