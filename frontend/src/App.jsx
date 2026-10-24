@@ -1,7 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { RUTA_POR_ROL, useAuth } from './context/AuthContext.jsx';
 import RutaProtegida from './components/RutaProtegida.jsx';
-import Login from './pages/login.jsx';
+import Login from './pages/Login.jsx';
 import GestionRecursos from './pages/GestionRecursos.jsx';
 import CatalogoEstudiante from './pages/CatalogoEstudiante.jsx';
 
@@ -15,7 +15,7 @@ function Inicio() {
 export default function App() {
   return (
     <Routes>
-      <Route path="/login" element={<Login />} />
+      <Route path="/Login" element={<Login />} />
       <Route
         path="/admin/recursos"
         element={

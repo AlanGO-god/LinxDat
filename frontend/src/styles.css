@@ -200,3 +200,61 @@ body {
 .aviso-pagina h2 { margin: 0; color: var(--rojo); }
 .aviso-pagina p { margin: 0; }
 .aviso-pagina a.btn { text-decoration: none; }
+
+/* ---------- Catálogo del estudiante (US02, según mockup) ---------- */
+.cat { max-width: 1100px; margin: 0 auto; }
+
+.cat-buscador {
+  display: flex; align-items: center; gap: 10px; padding: 0 20px;
+  background: #fff; border-radius: 999px; color: #6b7a72;
+  border: 1px solid var(--borde);
+}
+.cat-buscador input {
+  flex: 1; border: 0; outline: 0; background: transparent; font: inherit;
+  padding: 14px 0; color: var(--texto);
+}
+
+.cat-filtros { display: flex; flex-wrap: wrap; gap: 24px; margin: 20px 0; }
+.cat-filtro { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 0.9rem; }
+.cat-filtro select {
+  min-width: 140px; padding: 6px 10px; border: 1px solid var(--borde);
+  border-radius: 6px; background: #fff; font: inherit; font-weight: 400;
+}
+.cat-filtro select:focus { outline: 2px solid var(--verde); }
+
+.cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; }
+
+.cat-card {
+  background: #fff; border: 1px solid var(--borde); border-radius: 10px; padding: 16px;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+.cat-card__titulo { margin: 0 0 6px; font-size: 1.05rem; font-weight: 800; }
+.cat-card__dato { margin: 0; font-size: 0.88rem; }
+.cat-card__ubic { display: flex; align-items: center; gap: 4px; color: #3d4a43; }
+.cat-card .cat-badge { margin-top: 6px; }
+
+.cat-badge {
+  display: inline-block; padding: 3px 14px; border-radius: 999px;
+  font-size: 0.82rem; font-weight: 700;
+}
+.cat-badge--disponible { background: #0b5d2e; color: #fff; }
+.cat-badge--prestado { background: #f7d33b; color: #1f2a24; }
+.cat-badge--en_mantenimiento { background: #f7d33b; color: #1f2a24; }
+
+.cat-btn {
+  margin-top: 10px; width: 100%; padding: 8px; background: #fff; color: #0b5d2e;
+  border: 1.5px solid #0b5d2e; border-radius: 6px; font: inherit; font-weight: 700; cursor: pointer;
+}
+.cat-btn:hover { background: var(--verde-claro); }
+
+.cat-vacio {
+  text-align: center; padding: 32px; color: #6b7a72; background: #fff;
+  border: 1px dashed var(--borde); border-radius: 10px;
+}
+
+.cat-modal .cat-badge { margin-bottom: 8px; }
+.cat-detalle { display: grid; grid-template-columns: 150px 1fr; gap: 8px 12px; margin: 14px 0 0; }
+.cat-detalle dt { font-weight: 700; }
+.cat-detalle dd { margin: 0; }
+@media (max-width: 520px) { .cat-detalle { grid-template-columns: 1fr; } }
