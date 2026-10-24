@@ -8,6 +8,8 @@ export function listarRecursos({ estado = '', q = '' } = {}) {
   return request(`/api/recursos${qs ? `?${qs}` : ''}`);
 }
 
+export const obtenerRecurso = (id) => request(`/api/recursos/${id}`);
+
 export const crearRecurso = (datos) =>
   request('/api/recursos', { method: 'POST', body: JSON.stringify(datos) });
 

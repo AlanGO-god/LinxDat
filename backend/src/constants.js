@@ -7,3 +7,7 @@ export const ESTADOS = ['disponible', 'prestado', 'en_mantenimiento', 'baja'];
 export const ESTADOS_EDITABLES = ['disponible', 'en_mantenimiento'];
 
 export const TIPOS = ['Multimedia', 'Laboratorio', 'Espacio'];
+
+// Solicitudes de préstamo (US04). Las pendientes y aprobadas apartan el horario.
+export const ESTADOS_SOLICITUD_OCUPAN = ['pendiente', 'aprobada'];
+export const DURACION_MAX_HORAS = 8;
