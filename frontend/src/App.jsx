@@ -6,6 +6,7 @@ import GestionRecursos from './pages/GestionRecursos.jsx';
 import CatalogoEstudiante from './pages/CatalogoEstudiante.jsx';
 import DetalleRecurso from './pages/DetalleRecurso.jsx';
 import BandejaSolicitudes from './pages/BandejaSolicitudes.jsx';
+import MisSolicitudes from './pages/MisSolicitudes.jsx';
 
 // "/" manda a cada usuario a la vista de su rol (o al login si no hay sesión)
 function Inicio() {
@@ -31,6 +32,14 @@ export default function App() {
         element={
           <RutaProtegida roles={['administrador']}>
             <BandejaSolicitudes />
+          </RutaProtegida>
+        }
+      />
+      <Route
+        path="/mis-solicitudes"
+        element={
+          <RutaProtegida roles={['estudiante']}>
+            <MisSolicitudes />
           </RutaProtegida>
         }
       />

@@ -1,4 +1,5 @@
 // US04 - Solicitud de préstamo de un recurso. US05 - Revisión por el administrador.
+// US06 - El estudiante consulta y cancela sus solicitudes.
 import { Router } from 'express';
 import { pool } from '../db.js';
 import {
@@ -144,6 +145,58 @@ router.patch(
     } finally {
       client.release();
     }
+  })
+);
+
+// GET /api/solicitudes/mias -> solicitudes del estudiante autenticado (US06), las más recientes primero.
+// El filtro por usuario_id sale del token, nunca de la URL: cada estudiante solo ve las suyas.
+router.get(
+  '/mias',
+  requireRole(ROL_ESTUDIANTE),
+  wrap(async (req, res) => {
+    const { rows } = await pool.query(
+      `SELECT s.id, s.fecha_inicio, s.fecha_limite, s.estado, s.comentario_admin, s.creado_en,
+              r.id AS recurso_id, r.nombre AS recurso_nombre, r.ubicacion AS recurso_ubicacion,
+              'R-' || LPAD(r.id::text, GREATEST(3, LENGTH(r.id::text)), '0') AS recurso_codigo
+         FROM solicitudes s
+         JOIN recursos r ON r.id = s.recurso_id
+        WHERE s.usuario_id = $1
+        ORDER BY s.creado_en DESC, s.id DESC`,
+      [req.usuario.id]
+    );
+    res.json(rows);
+  })
+);
+
+// PATCH /api/solicitudes/:id/cancelar -> el estudiante cancela una solicitud suya que sigue pendiente (US06)
+router.patch(
+  '/:id/cancelar',
+  requireRole(ROL_ESTUDIANTE),
+  wrap(async (req, res) => {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id) || id < 1) {
+      return res.status(400).json({ error: 'Identificador inválido' });
+    }
+
+    // Un solo UPDATE condicionado: solo cancela si es del usuario Y sigue pendiente.
+    // Si el administrador la decide al mismo tiempo, solo gana una de las dos operaciones.
+    const { rows } = await pool.query(
+      `UPDATE solicitudes SET estado = 'cancelada'
+        WHERE id = $1 AND usuario_id = $2 AND estado = 'pendiente'
+        RETURNING id, estado`,
+      [id, req.usuario.id]
+    );
+    if (rows.length) return res.json(rows[0]);
+
+    // No se canceló: se distingue "no es tuya / no existe" de "ya no está pendiente"
+    const actual = await pool.query(
+      'SELECT estado FROM solicitudes WHERE id = $1 AND usuario_id = $2',
+      [id, req.usuario.id]
+    );
+    if (!actual.rows.length) return res.status(404).json({ error: 'Solicitud no encontrada' });
+    return res.status(409).json({
+      error: `Solo se pueden cancelar solicitudes pendientes. Esta solicitud ya está ${actual.rows[0].estado}`,
+    });
   })
 );
 

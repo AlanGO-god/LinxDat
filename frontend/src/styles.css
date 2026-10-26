@@ -348,3 +348,14 @@ body {
 .bnd-resumen dd { margin: 0; }
 .bnd-contador { align-self: flex-end; color: #6b7a72; font-size: 0.78rem; }
 .bnd-dialogo .alerta { margin: 0; }
+
+/* ---------- Mis solicitudes del estudiante (US06) ---------- */
+.sol-badge { display: inline-block; padding: 3px 12px; border-radius: 999px; font-size: 0.82rem; font-weight: 600; }
+.sol-badge--pendiente { background: #fbefb0; color: #7a5a00; }
+.sol-badge--aprobada { background: #cdeed9; color: #17653a; }
+.sol-badge--rechazada { background: #fbdcdc; color: #9b2222; }
+.sol-badge--cancelada { background: #e3e6e4; color: #555; }
+.sol-badge--devuelta { background: #d6e6fb; color: #1d4e89; }
+.sol-recogida { display: block; margin-top: 6px; padding: 6px 10px; border-radius: 8px; background: #e8f7ee; color: #17653a; font-size: 0.82rem; }
+.sol-recogida svg { vertical-align: -2px; }
+.sol-recogida em { display: block; margin-top: 2px; font-style: normal; color: #2f5d44; }

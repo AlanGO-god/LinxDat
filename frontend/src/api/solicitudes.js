@@ -22,3 +22,10 @@ export const decidirSolicitud = (id, decision, comentario) =>
     method: 'PATCH',
     body: JSON.stringify({ decision, comentario }),
   });
+
+
+// Mis solicitudes del estudiante (US06)
+export const listarMisSolicitudes = () => request('/api/solicitudes/mias');
+
+export const cancelarSolicitud = (id) =>
+  request(`/api/solicitudes/${id}/cancelar`, { method: 'PATCH' });

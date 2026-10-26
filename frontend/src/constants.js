@@ -18,3 +18,12 @@ export const DURACION_MAX_HORAS = 8;
 
 // Revisión de solicitudes (US05)
 export const COMENTARIO_MAX = 500;
+
+// Estados de una solicitud (US06)
+export const ESTADOS_SOLICITUD = {
+  pendiente: 'Pendiente',
+  aprobada: 'Aprobada',
+  rechazada: 'Rechazada',
+  cancelada: 'Cancelada',
+  devuelta: 'Devuelta',
+};
