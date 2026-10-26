@@ -15,3 +15,6 @@ export const HORA_APERTURA = 7;
 export const HORA_CIERRE = 21;
 export const MINUTOS_BLOQUE = 30;
 export const DURACION_MAX_HORAS = 8;
+
+// Revisión de solicitudes (US05)
+export const COMENTARIO_MAX = 500;

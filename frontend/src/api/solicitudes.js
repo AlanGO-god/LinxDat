@@ -12,3 +12,13 @@ export function obtenerOcupacion(recursoId, desde, hasta) {
 
 export const crearSolicitud = (datos) =>
   request('/api/solicitudes', { method: 'POST', body: JSON.stringify(datos) });
+
+// Bandeja del administrador (US05)
+export const listarSolicitudes = (estado = 'pendiente') =>
+  request(`/api/solicitudes?${new URLSearchParams({ estado })}`);
+
+export const decidirSolicitud = (id, decision, comentario) =>
+  request(`/api/solicitudes/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ decision, comentario }),
+  });

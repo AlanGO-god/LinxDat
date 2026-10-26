@@ -335,3 +335,16 @@ body {
 .det-form__nota { margin-bottom: 10px; font-size: 0.82rem; }
 .det-form__btn { width: 100%; justify-content: center; }
 .det-confirmacion { display: flex; flex-direction: column; gap: 4px; }
+/* ---------- Bandeja de solicitudes del administrador (US05, según mockup) ---------- */
+.bnd-total { margin: 0; font-size: 0.95rem; }
+.bnd-sub { display: block; font-size: 0.8rem; color: #6b7a72; margin-top: 2px; }
+.bnd-sub .badge { font-size: 0.72rem; padding: 1px 8px; }
+.tabla .acciones .btn { white-space: nowrap; }
+.bnd-dialogo--rechazo { border-top: 6px solid var(--rojo); }
+.bnd-dialogo--rechazo h2 { color: #9b2222; }
+.bnd-dialogo:not(.bnd-dialogo--rechazo) { border-top: 6px solid var(--verde); }
+.bnd-resumen { display: grid; grid-template-columns: 90px 1fr; gap: 4px 12px; margin: 0 0 14px; font-size: 0.92rem; }
+.bnd-resumen dt { font-weight: 700; }
+.bnd-resumen dd { margin: 0; }
+.bnd-contador { align-self: flex-end; color: #6b7a72; font-size: 0.78rem; }
+.bnd-dialogo .alerta { margin: 0; }
