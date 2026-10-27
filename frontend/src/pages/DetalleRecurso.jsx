@@ -343,6 +343,7 @@ export default function DetalleRecurso() {
                 {fmtHora(new Date(confirmacion.fecha_limite))}
               </span>
               <span>Estado: <strong>Pendiente</strong> de aprobación por el administrador.</span>
+              <span><Link to="/mis-solicitudes">Ver mis solicitudes</Link></span>
             </div>
           )}
 

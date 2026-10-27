@@ -8,6 +8,7 @@ const MENU = [
   { icono: 'box', titulo: 'Recursos', ruta: '/admin/recursos', roles: ['administrador'] },
   { icono: 'inbox', titulo: 'Solicitudes', ruta: '/admin/solicitudes', roles: ['administrador'] },
   { icono: 'box', titulo: 'Catálogo', ruta: '/catalogo', roles: ['estudiante'] },
+  { icono: 'inbox', titulo: 'Mis solicitudes', ruta: '/mis-solicitudes', roles: ['estudiante'] },
   { icono: 'users', titulo: 'Usuarios (próximamente)', roles: ['administrador'] },
   { icono: 'clock', titulo: 'Historial (próximamente)', roles: ['administrador', 'estudiante'] },
   { icono: 'briefcase', titulo: 'Préstamos (próximamente)', roles: ['administrador', 'estudiante'] },
