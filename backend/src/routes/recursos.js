@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { pool } from '../db.js';
 import { ESTADOS, ESTADOS_EDITABLES, TIPOS } from '../constants.js';
-import { requireAuth, requireAdmin } from '../middleware/auth.js';
+import { ROL_ADMIN, requireAuth, requireAdmin } from '../middleware/auth.js';
 
 const router = Router();
 router.use(requireAuth); // consultar: cualquier usuario con sesión (US02). Modificar: solo administrador
@@ -61,6 +61,8 @@ router.get(
     const { estado, q } = req.query;
     const where = [];
     const params = [];
+        // Los recursos dados de baja solo los ve el administrador
+    if (req.usuario.rol !== ROL_ADMIN) where.push(`estado <> 'baja'`);
 
     if (estado) {
       if (!ESTADOS.includes(estado)) {
@@ -92,9 +94,11 @@ router.get(
   '/:id',
   validarId,
   wrap(async (req, res) => {
-    const { rows } = await pool.query(`SELECT ${COLUMNAS} FROM recursos WHERE id = $1`, [
-      req.recursoId,
-    ]);
+    const filtroBaja = req.usuario.rol === ROL_ADMIN ? '' : `AND estado <> 'baja'`;
+    const { rows } = await pool.query(
+      `SELECT ${COLUMNAS} FROM recursos WHERE id = $1 ${filtroBaja}`,
+      [req.recursoId]
+    );
     if (!rows.length) return res.status(404).json({ error: 'Recurso no encontrado' });
     res.json(rows[0]);
   })
@@ -171,7 +175,7 @@ router.put(
 );
 
 // DELETE /api/recursos/:id  -> BAJA LÓGICA (no borra la fila, conserva el historial de préstamos)
-router.put(
+router.delete(
   '/:id',
   requireAdmin,
   validarId,

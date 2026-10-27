@@ -8,6 +8,11 @@ import {
   DURACION_MAX_HORAS,
   ESTADOS_SOLICITUD,
   ESTADOS_SOLICITUD_OCUPAN,
+  HORA_APERTURA,
+  HORA_CIERRE,
+  MAX_PENDIENTES_POR_USUARIO,
+  MINUTOS_BLOQUE,
+  ZONA_HORARIA,
 } from '../constants.js';
 import { ROL_ESTUDIANTE, requireAdmin, requireAuth, requireRole } from '../middleware/auth.js';
 
@@ -22,6 +27,30 @@ const aFecha = (v) => {
   const d = new Date(String(v ?? ''));
   return Number.isNaN(d.getTime()) ? null : d;
 };
+// Hora local de la institución (el contenedor corre en UTC)
+const fmtHoraLocal = new Intl.DateTimeFormat('en-GB', {
+  timeZone: ZONA_HORARIA,
+  hour: '2-digit',
+  minute: '2-digit',
+  hourCycle: 'h23',
+});
+const fmtDiaLocal = new Intl.DateTimeFormat('en-CA', {
+  timeZone: ZONA_HORARIA,
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+});
+const minutosLocales = (fecha) => {
+  const [h, m] = fmtHoraLocal.format(fecha).split(':').map(Number);
+  return h * 60 + m;
+};
+
+// Mismo día, entre apertura y cierre, en bloques de MINUTOS_BLOQUE y sin segundos
+const dentroDelHorario = (inicio, fin) =>
+  [inicio, fin].every((d) => d.getTime() % 60000 === 0 && minutosLocales(d) % MINUTOS_BLOQUE === 0) &&
+  fmtDiaLocal.format(inicio) === fmtDiaLocal.format(fin) &&
+  minutosLocales(inicio) >= HORA_APERTURA * 60 &&
+  minutosLocales(fin) <= HORA_CIERRE * 60;
 
 // Valida el cuerpo del POST. Las fechas llegan en ISO 8601 (el navegador ya aplicó su zona horaria).
 export function validarSolicitud(body = {}, ahora = new Date()) {
@@ -40,6 +69,9 @@ export function validarSolicitud(body = {}, ahora = new Date()) {
     errores.fecha_limite = 'La hora de devolución debe ser posterior a la de inicio';
   } else if (inicio && fin - inicio > DURACION_MAX_HORAS * MS_HORA) {
     errores.fecha_limite = `El préstamo no puede durar más de ${DURACION_MAX_HORAS} horas`;
+  }
+    if (inicio && fin && !errores.fecha_inicio && !errores.fecha_limite && !dentroDelHorario(inicio, fin)) {
+    errores.fecha_limite = `El préstamo debe ser el mismo día, de ${HORA_APERTURA}:00 a ${HORA_CIERRE}:00, en bloques de ${MINUTOS_BLOQUE} minutos`;
   }
 
   return { datos: { recursoId, inicio, fin }, errores };
@@ -108,7 +140,7 @@ router.patch(
 
       // FOR UPDATE: si dos administradores deciden a la vez, el segundo ve la decisión del primero
       const actual = await client.query(
-        `SELECT s.estado, r.estado AS recurso_estado
+        `SELECT s.estado, s.fecha_limite, r.estado AS recurso_estado
            FROM solicitudes s JOIN recursos r ON r.id = s.recurso_id
           WHERE s.id = $1
           FOR UPDATE OF s`,
@@ -118,7 +150,7 @@ router.patch(
         await client.query('ROLLBACK');
         return res.status(404).json({ error: 'Solicitud no encontrada' });
       }
-      const { estado, recurso_estado: recursoEstado } = actual.rows[0];
+            const { estado, fecha_limite: fechaLimite, recurso_estado: recursoEstado } = actual.rows[0];
       if (estado !== 'pendiente') {
         await client.query('ROLLBACK');
         return res.status(409).json({ error: `Esta solicitud ya fue ${estado}` });
@@ -128,6 +160,12 @@ router.patch(
         await client.query('ROLLBACK');
         return res.status(409).json({
           error: 'El recurso ya no está disponible (mantenimiento o baja). Rechaza la solicitud indicando el motivo',
+        });
+      }
+       if (datos.decision === 'aprobada' && new Date(fechaLimite) <= new Date()) {
+        await client.query('ROLLBACK');
+        return res.status(409).json({
+          error: 'El horario de esta solicitud ya pasó. Recházala indicando el motivo',
         });
       }
 
@@ -248,9 +286,19 @@ router.post(
         await client.query('ROLLBACK');
         return res.status(404).json({ error: 'Recurso no encontrado' });
       }
-      if (recurso.rows[0].estado !== 'disponible') {
+      if (!['disponible', 'prestado'].includes(recurso.rows[0].estado)) {
         await client.query('ROLLBACK');
         return res.status(409).json({ error: 'Este recurso no está disponible para solicitud' });
+      }
+      const pendientes = await client.query(
+        `SELECT COUNT(*)::int AS n FROM solicitudes WHERE usuario_id = $1 AND estado = 'pendiente'`,
+        [req.usuario.id]
+      );
+      if (pendientes.rows[0].n >= MAX_PENDIENTES_POR_USUARIO) {
+        await client.query('ROLLBACK');
+        return res.status(409).json({
+          error: `Ya tienes ${MAX_PENDIENTES_POR_USUARIO} solicitudes pendientes. Espera a que se resuelvan o cancela alguna`,
+        });
       }
 
       const choque = await client.query(

@@ -18,7 +18,7 @@ function Inicio() {
 export default function App() {
   return (
     <Routes>
-      <Route path="/Login" element={<Login />} />
+      <Route path="/login" element={<Login />} />
       <Route
         path="/admin/recursos"
         element={
