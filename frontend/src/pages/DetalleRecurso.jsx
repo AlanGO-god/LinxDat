@@ -144,6 +144,7 @@ export default function DetalleRecurso() {
 
   const [mes, setMes] = useState(() => new Date(hoy.getFullYear(), hoy.getMonth(), 1));
   const [ocupados, setOcupados] = useState([]);
+  const [errorOcupacion, setErrorOcupacion] = useState(false);
   const [dia, setDia] = useState(null);
   const [inicio, setInicio] = useState('');
   const [fin, setFin] = useState('');
@@ -168,10 +169,14 @@ export default function DetalleRecurso() {
     const desde = new Date(mes.getFullYear(), mes.getMonth(), 1);
     const hasta = new Date(mes.getFullYear(), mes.getMonth() + 1, 1);
     return obtenerOcupacion(id, desde, hasta)
-      .then((filas) =>
-        setOcupados(filas.map((o) => ({ ...o, inicio: new Date(o.inicio), fin: new Date(o.fin) })))
-      )
-      .catch(() => setOcupados([]));
+      .then((filas) => {
+        setErrorOcupacion(false);
+        setOcupados(filas.map((o) => ({ ...o, inicio: new Date(o.inicio), fin: new Date(o.fin) })));
+      })
+      .catch(() => {
+        setOcupados([]);
+        setErrorOcupacion(true);
+      });
   }, [id, mes]);
 
   useEffect(() => {
@@ -256,7 +261,7 @@ export default function DetalleRecurso() {
   }
 
   const listaRestricciones = restricciones(recurso.condiciones_uso);
-  const disponible = recurso.estado === 'disponible';
+  const disponible = ['disponible', 'prestado'].includes(recurso.estado);
   const esEstudiante = usuario?.rol === 'estudiante';
 
   return (
@@ -313,6 +318,11 @@ export default function DetalleRecurso() {
             ocupados={ocupados}
             hoy={hoy}
           />
+          {errorOcupacion && (
+            <p className="alerta alerta--error" role="alert">
+              No se pudieron cargar los horarios ocupados. Recarga la página: podrías ver horarios que ya están apartados.
+            </p>
+          )}
           {dia && (
             <div className="det-ocupados">
               <p className="det-ocupados__dia">{fmtDia(dia)}</p>

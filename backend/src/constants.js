@@ -16,3 +16,10 @@ export const DURACION_MAX_HORAS = 8;
 export const ESTADOS_SOLICITUD = ['pendiente', 'aprobada', 'rechazada', 'cancelada', 'devuelta'];
 export const DECISIONES = ['aprobada', 'rechazada'];
 export const COMENTARIO_MAX = 500;
+
+// Horario de atención (US04): se valida en el servidor en la zona de la institución
+export const ZONA_HORARIA = 'America/Mexico_City';
+export const HORA_APERTURA = 7;
+export const HORA_CIERRE = 21;
+export const MINUTOS_BLOQUE = 30;
+export const MAX_PENDIENTES_POR_USUARIO = 5;

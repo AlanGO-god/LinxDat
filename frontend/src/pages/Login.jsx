@@ -73,7 +73,7 @@ const ROLES = [
   { valor: 'administrador', etiqueta: 'Administrador', Icono: IconoAdmin },
 ];
 
-export default function login() {
+export default function Login() {
   const { usuario, cargando, login } = useAuth();
   const navigate = useNavigate();
   const [rol, setRol] = useState('estudiante');
